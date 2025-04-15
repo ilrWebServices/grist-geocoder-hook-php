@@ -1,0 +1,8 @@
+persist
+scripts
+vendor
+.env
+.env-example
+.git
+compose.yml
+Dockerfile

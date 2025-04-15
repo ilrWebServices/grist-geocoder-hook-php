@@ -1,0 +1,31 @@
+# A docker compose file for local development.
+services:
+  geocoder:
+    container_name: geocoder_web
+    build: .
+    restart: always
+    environment:
+      GRIST_BASE_URL: http://geocoder_grist:8484
+      GRIST_ACCESS_TOKEN: ${GRIST_ACCESS_TOKEN}
+      ACCESS_TOKEN: ${ACCESS_TOKEN}
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - persist/
+            - vendor/
+        - action: rebuild
+          path: composer.json
+
+  grist:
+    image: gristlabs/grist:latest
+    container_name: geocoder_grist
+    volumes:
+      # Where to store persistent data, such as documents.
+      - ${PERSIST_DIR:-./persist}/grist:/persist
+    ports:
+      - 8585:8484
+    environment:
+      ALLOWED_WEBHOOK_DOMAINS: '*'

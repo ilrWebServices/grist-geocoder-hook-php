@@ -1,0 +1,26 @@
+{
+    "name": "ilrweb/grist-webhook-geocoder-php",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ilrweb\\GristWebhookGeocoderPhp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jeff Amaral",
+            "email": "jeff.amaral@cornell.edu"
+        }
+    ],
+    "require": {
+        "geocoder-php/nominatim-provider": "^5.7",
+        "guzzlehttp/guzzle": "^7.9",
+        "geocoder-php/chain-provider": "^4.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
