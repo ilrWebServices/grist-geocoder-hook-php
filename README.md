@@ -38,7 +38,7 @@ services:
     #  - grist
 
   geocoder:
-    image: docker.io/ilrweb/grist-geocoder-hook-php
+    image: docker.io/ilrweb/grist-geocoder-hook-php:latest
     container_name: geocoder_web
     restart: always
     # Uncomment the following for external access. If running in the same
