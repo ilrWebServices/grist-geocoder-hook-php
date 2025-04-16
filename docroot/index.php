@@ -10,6 +10,15 @@ use Geocoder\ProviderAggregator;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$access_token = get_env_setting(name: 'ACCESS_TOKEN', required: TRUE);
+$grist_base_url = get_env_setting(name: 'GRIST_BASE_URL', required: TRUE);
+$grist_access_token = get_env_setting(name: 'GRIST_ACCESS_TOKEN', required: TRUE);
+$grist_document = get_env_setting(name: 'GRIST_DOCUMENT', required: TRUE);
+$grist_table = get_env_setting(name: 'GRIST_TABLE', required: TRUE, fallback: 'Locations');
+$nominatim_user_agent = get_env_setting(name: 'NOMINATIM_USER_AGENT', required: TRUE);
+$nominatim_referer = get_env_setting(name: 'NOMINATIM_REFERER', required: TRUE);
+$mapbox_api_key = get_env_setting(name: 'MAPBOX_API_KEY');
+$google_maps_geocoder_api_key = get_env_setting(name: 'GOOGLE_MAPS_GEOCODER_API_KEY');
 $headers = getallheaders();
 
 if (empty($headers['Authorization'])) {
@@ -18,7 +27,7 @@ if (empty($headers['Authorization'])) {
   return;
 }
 
-if ($headers['Authorization'] !== 'Bearer ' . getenv('ACCESS_TOKEN')) {
+if ($headers['Authorization'] !== 'Bearer ' . $access_token) {
   http_response_code(500);
   error_log('Incorrect access token.');
   return;
@@ -32,23 +41,27 @@ if (!is_array($data)) {
   return;
 }
 
-$grist_document = preg_replace('/[^A-Za-z0-9]+/', '', $_GET['grist_document'] ?? '');
-$grist_table = preg_replace('/[^A-Za-z0-9]+/', '', $_GET['grist_table'] ?? 'Locations');
-
 error_log(sprintf('Webhook sent %d record(s).', count($data)));
 
 $guzzle_client = new GuzzleClient();
 $geocoder = new ProviderAggregator();
 $chain = new Chain([
-  Nominatim::withOpenStreetMapServer($guzzle_client, 'ilrweb@cornell.edu'),
-  new Mapbox($guzzle_client, getenv('MAPBOX_API_KEY')),
-  new GoogleMaps($guzzle_client, null, getenv('GOOGLE_MAPS_GEOCODER_API_KEY')),
+  Nominatim::withOpenStreetMapServer($guzzle_client, $nominatim_user_agent, $nominatim_referer),
 ]);
+
+if ($mapbox_api_key) {
+  $chain->add(new Mapbox($guzzle_client, $mapbox_api_key));
+}
+
+if ($google_maps_geocoder_api_key) {
+  $chain->add(new GoogleMaps($guzzle_client, null, $google_maps_geocoder_api_key));
+}
+
 $geocoder->registerProvider($chain);
 $grist_client = new GuzzleClient([
-  'base_uri' => getenv('GRIST_BASE_URL'),
+  'base_uri' => $grist_base_url,
   'headers' => [
-    'Authorization' => "Bearer " . getenv('GRIST_ACCESS_TOKEN')
+    'Authorization' => "Bearer " . $grist_access_token
   ]
 ]);
 
@@ -87,4 +100,19 @@ foreach ($data as $record) {
     http_response_code(500);
     error_log($e->getMessage());
   }
+}
+
+function get_env_setting(string $name, bool $required = FALSE, string $fallback = ''): string {
+  $env_val = getenv($name);
+
+  if ($env_val === false) {
+    $env_val = $fallback;
+  }
+
+  if ($required && $env_val === '') {
+    error_log(sprintf('Missing required variable %s.', $name));
+    exit;
+  }
+
+  return $env_val;
 }

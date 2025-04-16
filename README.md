@@ -4,6 +4,8 @@ This application geocodes address data in Grist webhook payloads and updates Lat
 
 It can use multiple geocoding providers to map strings like '1600 Pennsylvania Avenue NW, Washington, DC, 20500' to geographic coordinates.
 
+By default, it uses the free [Nominatim](https://nominatim.org/) geocoding service, falling back to MapBox and Google if configured.
+
 ## Requirements
 
 - Although not absolutely required, this application is intended to run as a container (Docker, Podman, etc.) alongside a containerized, self-hosted version of Grist, and this documentation will reflect that.
@@ -17,7 +19,23 @@ It can use multiple geocoding providers to map strings like '1600 Pennsylvania A
 
 It's easiest to run this application via Docker compose. 
 
-First, copy `.env.example` to `.env` and set `GRIST_ACCESS_TOKEN` with your API token for the Grist document and `ACCESS_TOKEN` to any unique value you choose (I use `pwgen 32` for a nice, long, random string like `oht1ejooMeeh6ThuB0gaphooshee9Usa`).
+First, copy `.env.example` to `.env` and set the environment variables:
+
+`GRIST_ACCESS_TOKEN` An API token with write access to the Grist document.
+
+`GRIST_DOCUMENT`: The ID of the Grist document to update, e.g. `t1Z7KJvSKXj8vexu8RqtnA`. This should match the ID of the document where the webhook is configured.
+
+`GRIST_TABLE`: The name of the table in the Grist document, as configured in the webhook, e.g. `Locations`.
+
+`ACCESS_TOKEN`: A unique value you choose (I use `pwgen 32` for a nice, long, random string like `oht1ejooMeeh6ThuB0gaphooshee9Usa`).
+
+`NOMINATIM_USER_AGENT`: A _User-Agent_ value for the default Nominatim service, as per the [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/).
+
+`NOMINATIM_REFERER`: An _HTTP Referer_ value for the default Nominatim service, as per the [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/).
+
+`MAPBOX_API_KEY`: (optional) An API key for the MapBox API, used as a fallback geocoder.
+
+`GOOGLE_MAPS_GEOCODER_API_KEY`: (optional) An API key for Google Geocoding, also used as a fallback geocoder.
 
 Next, create a `compose.yml` file alongside your `.env` file. Here is an example that includes Grist.
 
@@ -48,7 +66,13 @@ services:
     environment:
       GRIST_BASE_URL: http://geocoder_grist:8484
       GRIST_ACCESS_TOKEN: ${GRIST_ACCESS_TOKEN}
+      GRIST_DOCUMENT: ${GRIST_DOCUMENT}
+      GRIST_TABLE: ${GRIST_TABLE}
       ACCESS_TOKEN: ${ACCESS_TOKEN}
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT}
+      NOMINATIM_REFERER: ${NOMINATIM_REFERER}
+      GOOGLE_MAPS_GEOCODER_API_KEY: ${GOOGLE_MAPS_GEOCODER_API_KEY}
+      MAPBOX_API_KEY: ${MAPBOX_API_KEY}
     # Uncomment to use a named private network.
     #networks:
     #  - grist
@@ -68,20 +92,13 @@ services:
 
 `Table`: The name of the data table with the `Address`, `Latitude`, and `Longitude` columns, e.g. `Locations`.
 
-`Filter for changes in these columns`: (optional) `Address`
+`Filter for changes in these columns`: (optional) `Address`.
 
 `Ready Column`: (optional) A boolean (toggle) column that must be `true` for the webhook to fire. `Geocode` is a good column name.
 
 `URL`: The URL of this webhook application instance. If Grist is self-hosted via Docker or similar, you can run this application alongside Grist on the same [Docker network](https://docs.docker.com/compose/how-tos/networking/#specify-custom-networks) and avoid opening an external port.
 
-You should also include two query parameters in the URL:
-
-  - `grist_document`: The id of the current Grist document, e.g. `t1Z7KJvSKXj8vexu8RqtnA`.
-  - `grist_table`: The name of the table set above, e.g. `Locations`.
-
-A full `URL` example might look like `http://geocoder_web:8181/?grist_document=t1Z7KJvSKXj8vexu8RqtnA&grist_table=Locations`.
-
-If hosting the webhook app on a qualified domain with open web access, the URL would look like `https://geocode.example.net/?grist_document=t1Z7KJvSKXj8vexu8RqtnA&grist_table=Locations`.
+A full `URL` example might look like `http://geocoder_web:8181/`. If hosting the webhook app on a qualified domain with open web access, the URL would look like `https://geocode.example.net/`.
 
 `Header Authorization`: Set this to the string 'Bearer `[ACCESS_TOKEN]`' (note that it starts with 'Bearer' followed by a single space) where `[ACCESS_TOKEN]` is the same as the value configured in the `.env` file. This is used to limit access to the webhook app.
 
