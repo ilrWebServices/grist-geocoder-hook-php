@@ -1,6 +1,8 @@
 <?php
 
 use Geocoder\Provider\Chain\Chain;
+use Geocoder\Provider\GoogleMaps\GoogleMaps;
+use Geocoder\Provider\Mapbox\Mapbox;
 use Geocoder\Query\GeocodeQuery;
 use GuzzleHttp\Client as GuzzleClient;
 use Geocoder\Provider\Nominatim\Nominatim;
@@ -39,8 +41,8 @@ $guzzle_client = new GuzzleClient();
 $geocoder = new ProviderAggregator();
 $chain = new Chain([
   Nominatim::withOpenStreetMapServer($guzzle_client, 'ilrweb@cornell.edu'),
-  // US Census provider, to be written if fallback is necessary.
-  // www.here.com has a free tier that and could be the final fallback.
+  new Mapbox($guzzle_client, getenv('MAPBOX_API_KEY')),
+  new GoogleMaps($guzzle_client, null, getenv('GOOGLE_MAPS_GEOCODER_API_KEY')),
 ]);
 $geocoder->registerProvider($chain);
 $grist_client = new GuzzleClient([
@@ -66,7 +68,7 @@ foreach ($data as $record) {
   else {
     $latitude = $result->first()->getCoordinates()->getLatitude();
     $longitude = $result->first()->getCoordinates()->getLongitude();
-    error_log(sprintf('Found coordinates "%s" latitude and "%s" longitude.', $latitude, $longitude));
+    error_log(sprintf('Found coordinates "%s" latitude and "%s" longitude via %s.', $latitude, $longitude, $result->first()->getProvidedBy()));
   }
 
   try {

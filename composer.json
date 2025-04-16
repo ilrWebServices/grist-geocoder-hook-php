@@ -16,7 +16,9 @@
     "require": {
         "geocoder-php/nominatim-provider": "^5.7",
         "guzzlehttp/guzzle": "^7.9",
-        "geocoder-php/chain-provider": "^4.5"
+        "geocoder-php/chain-provider": "^4.5",
+        "geocoder-php/google-maps-provider": "^4.8",
+        "geocoder-php/mapbox-provider": "^1.5"
     },
     "config": {
         "allow-plugins": {

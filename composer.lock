@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eefe7d53a990a85ed118ccb0bda4f695",
+    "content-hash": "8ea915fe4e2e87f01a0e42b0889e1004",
     "packages": [
         {
             "name": "geocoder-php/chain-provider",
@@ -126,6 +126,122 @@
                 "source": "https://github.com/geocoder-php/php-common-http/tree/4.6.0"
             },
             "time": "2023-12-28T10:51:54+00:00"
+        },
+        {
+            "name": "geocoder-php/google-maps-provider",
+            "version": "4.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geocoder-php/google-maps-provider.git",
+                "reference": "587aac3647ebd2ce2090b613fc56c753b9dee9a7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geocoder-php/google-maps-provider/zipball/587aac3647ebd2ce2090b613fc56c753b9dee9a7",
+                "reference": "587aac3647ebd2ce2090b613fc56c753b9dee9a7",
+                "shasum": ""
+            },
+            "require": {
+                "geocoder-php/common-http": "^4.0",
+                "php": "^8.0",
+                "willdurand/geocoder": "^4.0|^5.0"
+            },
+            "provide": {
+                "geocoder-php/provider-implementation": "1.0"
+            },
+            "require-dev": {
+                "geocoder-php/provider-integration-tests": "^1.6.3",
+                "php-http/message": "^1.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Geocoder\\Provider\\GoogleMaps\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "William Durand",
+                    "email": "william.durand1@gmail.com"
+                }
+            ],
+            "description": "Geocoder GoogleMaps adapter",
+            "homepage": "http://geocoder-php.org/Geocoder/",
+            "support": {
+                "source": "https://github.com/geocoder-php/google-maps-provider/tree/4.8.0"
+            },
+            "time": "2025-04-15T13:24:32+00:00"
+        },
+        {
+            "name": "geocoder-php/mapbox-provider",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geocoder-php/mapbox-provider.git",
+                "reference": "cf41bc1a19b9c54277d615c884bf95d0bfc2ae9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geocoder-php/mapbox-provider/zipball/cf41bc1a19b9c54277d615c884bf95d0bfc2ae9f",
+                "reference": "cf41bc1a19b9c54277d615c884bf95d0bfc2ae9f",
+                "shasum": ""
+            },
+            "require": {
+                "geocoder-php/common-http": "^4.0",
+                "php": "^8.0",
+                "willdurand/geocoder": "^4.0|^5.0"
+            },
+            "provide": {
+                "geocoder-php/provider-implementation": "1.0"
+            },
+            "require-dev": {
+                "geocoder-php/provider-integration-tests": "^1.6.3",
+                "php-http/message": "^1.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Geocoder\\Provider\\Mapbox\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fede Isas",
+                    "email": "federicoisas@gmail.com"
+                }
+            ],
+            "description": "Geocoder Mapbox adapter",
+            "homepage": "http://geocoder-php.org/Geocoder/",
+            "support": {
+                "source": "https://github.com/geocoder-php/mapbox-provider/tree/1.5.0"
+            },
+            "time": "2025-04-15T13:24:32+00:00"
         },
         {
             "name": "geocoder-php/nominatim-provider",

@@ -8,6 +8,8 @@ services:
       GRIST_BASE_URL: http://geocoder_grist:8484
       GRIST_ACCESS_TOKEN: ${GRIST_ACCESS_TOKEN}
       ACCESS_TOKEN: ${ACCESS_TOKEN}
+      GOOGLE_MAPS_GEOCODER_API_KEY: ${GOOGLE_MAPS_GEOCODER_API_KEY}
+      MAPBOX_API_KEY: ${MAPBOX_API_KEY}
     develop:
       watch:
         - action: sync
