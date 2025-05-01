@@ -17,7 +17,7 @@ $grist_document = get_env_setting(name: 'GRIST_DOCUMENT', required: TRUE);
 $grist_table = get_env_setting(name: 'GRIST_TABLE', required: TRUE, fallback: 'Locations');
 $nominatim_user_agent = get_env_setting(name: 'NOMINATIM_USER_AGENT', required: TRUE);
 $nominatim_referer = get_env_setting(name: 'NOMINATIM_REFERER', required: TRUE);
-$mapbox_api_key = get_env_setting(name: 'MAPBOX_API_KEY');
+$mapbox_api_key = get_env_setting(name: 'MAPBOX_API_KEY', required: TRUE);
 $google_maps_geocoder_api_key = get_env_setting(name: 'GOOGLE_MAPS_GEOCODER_API_KEY');
 $headers = getallheaders();
 
@@ -46,12 +46,9 @@ error_log(sprintf('Webhook sent %d record(s).', count($data)));
 $guzzle_client = new GuzzleClient();
 $geocoder = new ProviderAggregator();
 $chain = new Chain([
+  new Mapbox($guzzle_client, $mapbox_api_key),
   Nominatim::withOpenStreetMapServer($guzzle_client, $nominatim_user_agent, $nominatim_referer),
 ]);
-
-if ($mapbox_api_key) {
-  $chain->add(new Mapbox($guzzle_client, $mapbox_api_key));
-}
 
 if ($google_maps_geocoder_api_key) {
   $chain->add(new GoogleMaps($guzzle_client, null, $google_maps_geocoder_api_key));
